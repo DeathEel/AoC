@@ -22,7 +22,7 @@ cd AoC
 ## Usage
 1. Change the directory to the year desired.
 ```bash
-cd 2024
+cd 2024  # example year 2024
 ```
 
 2. Download the inputs from [Advent of Code](https://adventofcode.com/) to a `.txt` file and move them to the `inputs` directory.
