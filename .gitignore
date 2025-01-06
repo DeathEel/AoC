@@ -3,3 +3,6 @@ advent_of_code
 
 # Inputs
 inputs/*.txt
+
+# Template directory
+template/
