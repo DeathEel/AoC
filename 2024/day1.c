@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
 #include "day1.h"
 
 int compare(const void *p, const void *q)
@@ -12,6 +10,11 @@ int compare(const void *p, const void *q)
 void solve_day1()
 {
 	FILE *file = fopen(INPUT_FILE, "r");
+	if (file == NULL)
+	{
+		perror("No input1.txt file found.\n");
+		return;
+	}
 
 	int *left = (int *)malloc(LINES * sizeof(int));
 	int *right = (int *)malloc(LINES * sizeof(int));
