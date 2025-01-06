@@ -14,8 +14,8 @@
 #define LINES 1000
 
 int dampen_problem(int *problem_dampened, int *safe_flag_part1, int *safe_flag_part2);
-void get_safe_count(int *report, int *safe_count);
-void read_report(FILE *file, int *report, int *capacity);
+void get_safe_count(int *report, int level_count, int *safe_count);
+int read_report(FILE *file, int **report, int *capacity);
 void solve_day2();
 
 #endif
