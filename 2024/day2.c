@@ -3,77 +3,51 @@
 #include <string.h>
 #include "day2.h"
 
-int dampen_problem(int *problem_dampened, int *safe_flag_part1, int *safe_flag_part2)
+void is_safe_with_dampener(int *report, int level_count, int *safe count, int *problem_is_dampened)
 {
-	*safe_flag_part1 = 0;
-
-	if (*problem_dampened == 0)
+	if (*problem_is_dampened == 0)
 	{
-		printf("Problem dampened.\n");
-		*problem_dampened = 1;
-		return 1;
+		*problem_is_dampened = 1;
 	}
 
-	if (*problem_dampened == 2)
+	for (int i = 0; i < level_count; i++)
 	{
-		return 1;
+		is_safe(report, level_count, safe_count, i);
 	}
-
-	*safe_flag_part2 = 0;
-
-	return 0;
 }
 
-void get_safe_count(int *report, int level_count, int *safe_count)
+void is_safe(int *report, int level_count, int *safe_count, int ignored_index)
 {
-	int safe_flag_part1 = 1, safe_flag_part2 = 1, problem_dampened = 0, gradient = 0;
-	int report_temp;
-
+	int safe_flag_part1 = 1;
+	int safe_flag_part2 = 1;
+	int problem_is_dampened = 0;
+	int gradient = 0;
+	
 	for (int i = 1; i < level_count; i++)
 	{
-		if (problem_dampened == 2)
+		if (ignored_index == 0)
 		{
-			i = 2;
-			report[i - 1] = report_temp;
-			problem_dampened++;
-			gradient = 0;
-			printf("Swap levels.\n");
-		}
-
-		if (problem_dampened == 1)
-		{
-			if (report[i - 1] != report[i - 2])
-			{
-				report_temp = report[i - 1];
-				report[i - 1] = report[i - 2];
-			}
-			else
-			{
-				problem_dampened = 3;
-			}
-
-			if (i == 2)
-			{
-				printf("Error in first 2 levels.\n");
-				problem_dampened++;
-				gradient = 0;
-			}
+			continue;
 		}
 
 		int level_delta = report[i] - report[i - 1];
 
+		if (i == ignored_index)
+		{
+			level_delta = report[i + 1] - report[i - 1];
+			i++;
+		}
+
 		if (level_delta == 0)
 		{
-			printf("Levels are same.\n");
-			if (dampen_problem(&problem_dampened, &safe_flag_part1, &safe_flag_part2) == 1)
+			safe_flag_part1 = 0;
+
+			if (problem_is_dampened == 0)
 			{
-				continue;
+				is_safe_with_dampener(report, level_count, safe_count, &problem_is_dampened);
 			}
-			else
-			{
-				break;
-			}
-			
+
+			break;
 		}
 
 		if (gradient == 0)
@@ -86,16 +60,16 @@ void get_safe_count(int *report, int level_count, int *safe_count)
 			continue;
 		}
 
-		printf("level_delta is %d.\ngradient is %d.\n", level_delta, gradient);
+		safe_flag_part1 = 0;
 
-		if (dampen_problem(&problem_dampened, &safe_flag_part1, &safe_flag_part2) == 1)
+		if (problem_is_dampened == 0)
 		{
-			continue;
+			is_safe_with_dampener(report, level_count, safe_count, &problem_is_dampened);
 		}
 
 		break;
 	}
-
+	
 	if (safe_flag_part1)
 	{
 		safe_count[0]++;
@@ -105,8 +79,6 @@ void get_safe_count(int *report, int level_count, int *safe_count)
 	{
 		safe_count[1]++;
 	}
-
-	printf("%d %d %d %d\n\n", safe_flag_part1, safe_flag_part2, safe_count[0], safe_count[1]);
 }
 
 int read_report(FILE *file, int **report, int *capacity)
@@ -158,7 +130,7 @@ void solve_day2()
 	for (int i = 0; i < LINES; i++)
 	{
 		int level_count = read_report(file, &report, &capacity);
-		get_safe_count(report, level_count, safe_count);
+		is_safe(report, level_count, safe_count, -1);
 	}
 
 	fclose(file);
