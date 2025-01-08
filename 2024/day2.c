@@ -1,53 +1,46 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include "day2.h"
 
-void is_safe_with_dampener(int *report, int level_count, int *safe count, int *problem_is_dampened)
+unsigned char dampen_problem(unsigned char *report, unsigned char level_count, unsigned char ignored_index)
 {
-	if (*problem_is_dampened == 0)
+	char gradient = 0;
+
+	// Copy of check_safety with returns instead of breaks
+	for (unsigned char i = 1; i < level_count; i++)
 	{
-		*problem_is_dampened = 1;
-	}
+		char level_delta;
 
-	for (int i = 0; i < level_count; i++)
-	{
-		is_safe(report, level_count, safe_count, i);
-	}
-}
-
-void is_safe(int *report, int level_count, int *safe_count, int ignored_index)
-{
-	int safe_flag_part1 = 1;
-	int safe_flag_part2 = 1;
-	int problem_is_dampened = 0;
-	int gradient = 0;
-	
-	for (int i = 1; i < level_count; i++)
-	{
-		if (ignored_index == 0)
-		{
-			continue;
-		}
-
-		int level_delta = report[i] - report[i - 1];
-
+		// Skip the ignored index and calculate level_delta from two indices behind
 		if (i == ignored_index)
 		{
-			level_delta = report[i + 1] - report[i - 1];
 			i++;
+
+			// Break at the end of report
+			if (i == level_count)
+			{
+				break;
+			}
+
+			level_delta = report[i] - report[i - 2];
+		}
+		// Index from directly behind normally
+		else
+		{
+			// If the ignored index is 0, calculate level_delta from indices 2 and 1 instead
+			if (i == 1 && ignored_index == 0)
+			{
+				i++;
+			}
+
+			level_delta = report[i] - report[i - 1];
 		}
 
 		if (level_delta == 0)
 		{
-			safe_flag_part1 = 0;
-
-			if (problem_is_dampened == 0)
-			{
-				is_safe_with_dampener(report, level_count, safe_count, &problem_is_dampened);
-			}
-
-			break;
+			return 0;
 		}
 
 		if (gradient == 0)
@@ -55,61 +48,89 @@ void is_safe(int *report, int level_count, int *safe_count, int ignored_index)
 			gradient = level_delta > 0 ? 1 : -1;
 		}
 
-		if ((gradient == -1 && level_delta >= -3 && level_delta < 0) || (gradient == 1 && level_delta <= 3 && level_delta > 0))
+		if (gradient * level_delta < 1 || gradient * level_delta > 3)
 		{
-			continue;
+			return 0;
 		}
-
-		safe_flag_part1 = 0;
-
-		if (problem_is_dampened == 0)
-		{
-			is_safe_with_dampener(report, level_count, safe_count, &problem_is_dampened);
-		}
-
-		break;
 	}
 	
-	if (safe_flag_part1)
-	{
-		safe_count[0]++;
-	}
-
-	if (safe_flag_part2)
-	{
-		safe_count[1]++;
-	}
+	return 2;
 }
 
-int read_report(FILE *file, int **report, int *capacity)
+unsigned char check_safety(unsigned char *report, unsigned char level_count)
 {
-	char buf[32];
-	int size = 0;
+	bool is_dampened = false;
+	char gradient = 0;
+	
+	for (unsigned char i = 1; i < level_count; i++)
+	{
+		char level_delta = report[i] - report[i - 1];
 
-	fgets(buf, sizeof(buf), file);
-	printf("%s", buf);
+		// Early break if level_delta is zero (no need to calculate gradient)
+		if (level_delta == 0)
+		{
+			is_dampened = true;
 
+			break;
+		}
+
+		// Assign gradient if not assigned
+		if (gradient == 0)
+		{
+			gradient = level_delta > 0 ? 1 : -1;
+		}
+
+		// Map level_delta to a positive value
+		if (gradient * level_delta < 1 || gradient * level_delta > 3)
+		{
+			is_dampened = true;
+
+			break;
+		}
+	}
+	
+	if (is_dampened == true)
+	{
+		for (int i = 0; i < level_count; i++)
+		{
+			if (dampen_problem(report, level_count, i) == 2)
+			{
+				return 2;
+			}
+		}
+		
+		return 0;
+	}
+
+	return 1;
+}
+
+unsigned char read_report(FILE *file, unsigned char *report)
+{
+	size_t buf_size = ELEMS_MAX * 3 + 2;	// Mulitply by 3 for the spaces and the null character
+						// Add 2 for the carriage return and new line
+	char *buf = (char *)calloc(buf_size, sizeof(char));
+	unsigned char size = 0;
+
+	// Clear end of report
+	for (unsigned char i = ELEMS_MAX - 1; i > ELEMS_MIN - 1; i--)
+	{
+		report[i] = 0;
+	}
+
+	// fgets reads until newline
+	fgets(buf, buf_size, file);
+
+	// strtok separates string into tokens delimited by " "
 	char *token = strtok(buf, " ");
 
 	while (token != NULL)
 	{
-		if (size == *capacity)
-		{
-			*capacity *= 2;
-			int *new_report = (int *)realloc(*report, *capacity * sizeof(int));
-			if (new_report == NULL)
-			{
-				perror("Memory allocation failed.\n");
-				free(*report);
-				exit(1);
-			}
-
-			*report = new_report;
-		}
-
-		(*report)[size++] = atoi(token);
-		token = strtok(NULL, " ");
+		report[size++] = (unsigned char)atoi(token);
+		token = strtok(NULL, " ");	// Additional calls to strtok return the next token
 	}
+
+	free(buf);
 
 	return size;
 }
@@ -123,25 +144,33 @@ void solve_day2()
 		return;
 	}
 
-	int capacity = 5;
-	int *report = (int *)malloc(capacity * sizeof(int));
-	int *safe_count = (int *)calloc(2 * sizeof(int), sizeof(int));
+	unsigned char *report = (unsigned char *)malloc(ELEMS_MAX * sizeof(unsigned char));
+	int safe_reports[2] = {0};
 
 	for (int i = 0; i < LINES; i++)
 	{
-		int level_count = read_report(file, &report, &capacity);
-		is_safe(report, level_count, safe_count, -1);
+		unsigned char levels = read_report(file, report);
+		unsigned char safety_status = check_safety(report, levels);
+
+		switch (safety_status)
+		{
+			case 1:
+				safe_reports[0]++;
+				// Fall through intended
+			case 2:
+				safe_reports[1]++;
+				break;
+			default:
+				break;
+		}
 	}
 
 	fclose(file);
 
-	int part1_result = safe_count[0];
-	int part2_result = safe_count[1];
-
 	free(report);
-	report = NULL;
-	free(safe_count);
-	safe_count = NULL;
+
+	int part1_result = safe_reports[0];
+	int part2_result = safe_reports[1];
 
 	printf("Result for Day 2, Part 1: %d\n", part1_result);
 	printf("Result for Day 2, Part 2: %d\n", part2_result);

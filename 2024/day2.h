@@ -13,9 +13,22 @@
 
 #define LINES 1000
 
-int dampen_problem(int *problem_dampened, int *safe_flag_part1, int *safe_flag_part2);
-void get_safe_count(int *report, int level_count, int *safe_count);
-int read_report(FILE *file, int **report, int *capacity);
+#ifdef ELEMS_MAX
+#undef ELEMS_MAX
+#endif
+
+#define ELEMS_MAX 8
+
+
+#ifdef ELEMS_MIN
+#undef ELEMS_MIN
+#endif
+
+#define ELEMS_MIN 5
+
+unsigned char dampen_problem(unsigned char *report, unsigned char level_count, unsigned char ignored_index);
+unsigned char check_safety(unsigned char *report, unsigned char level_count);
+unsigned char read_report(FILE *file, unsigned char *report);
 void solve_day2();
 
 #endif
