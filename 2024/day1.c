@@ -16,8 +16,8 @@ void solve_day1()
 		return;
 	}
 
-	int *left = (int *)malloc(LINES * sizeof(int));
-	int *right = (int *)malloc(LINES * sizeof(int));
+	int left[LINES];
+	int right[LINES];
 	int buf;
 	int count = 0;
 
@@ -71,9 +71,6 @@ void solve_day1()
 			}
 		}
 	}
-
-	free(left);
-	free(right);
 
 	printf("Result for Day 1, Part 1: %d\n", total_diff);
 	printf("Result for Day 1, Part 2: %d\n", sim_score);
