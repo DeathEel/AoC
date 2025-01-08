@@ -18,24 +18,26 @@ void solve_day1()
 
 	int left[LINES];
 	int right[LINES];
-	int buf;
+	int location;
 	int count = 0;
 
-	while (fscanf(file, "%d", &buf) == 1)
+	// Append location to left and right
+	while (fscanf(file, "%d", &location) == 1)
 	{
 		if (count % 2)
 		{
-			left[count / 2] = buf;
+			left[count / 2] = location;
 		}
 		else
 		{
-			right[count / 2] = buf;
+			right[count / 2] = location;
 		}
 		count++;
 	}
 	
 	fclose(file);
 
+	// Sort arrays
 	qsort(left, LINES, sizeof(int), compare);
 	qsort(right, LINES, sizeof(int), compare);
 
@@ -46,7 +48,8 @@ void solve_day1()
 		total_diff += abs(left[i] - right[i]);
 	}
 
-	int sim_score = 0, j_keep = 0;
+	int sim_score = 0;
+	int j_keep = 0;	// j_keep eliminates need to check backwards (lower-value locations)
 
 	for (int i = 0; i < LINES; i++)
 	{
@@ -57,14 +60,17 @@ void solve_day1()
 
 		for (int j = j_keep; j < LINES; j++)
 		{
+			// Add similar locations to sim_score
 			if (left[i] == right[j])
 			{
 				sim_score += left[i];
 			}
+			// Stop when right passes left
 			else if (left[i] < right[j])
 			{
 				break;
 			}
+			// Increase j_keep to keep track of right progress
 			else
 			{
 				j_keep++;
