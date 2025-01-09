@@ -257,7 +257,6 @@ int main(int argc, char *argv[])
 			else
 			{
 				printf("Unknown argument: %s\n", argv[i]);
-				return 1;
 			}
 		}
 	}
