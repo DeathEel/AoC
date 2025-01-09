@@ -1,3 +1,5 @@
+#include <stdbool.h>
+
 #ifndef DAY3_H
 #define DAY3_H
 
@@ -7,12 +9,7 @@
 
 #define INPUT_FILE "inputs/input3.txt"
 
-#ifdef LINES
-#undef LINES
-#endif
-
-#define LINES 1000
-
+void enable_disable_mul(char *ch, FILE **file, bool *is_mul);
 int check_digits(char *ch, FILE **file, unsigned char *index);
 void solve_day3();
 

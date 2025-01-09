@@ -169,9 +169,6 @@ void solve_day2()
 
 	free(report);
 
-	int part1_result = safe_reports[0];
-	int part2_result = safe_reports[1];
-
-	printf("Result for Day 2, Part 1: %d\n", part1_result);
-	printf("Result for Day 2, Part 2: %d\n", part2_result);
+	printf("Result for Day 2, Part 1: %d\n", safe_reports[0]);
+	printf("Result for Day 2, Part 2: %d\n", safe_reports[1]);
 }

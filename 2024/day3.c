@@ -1,7 +1,51 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include "day3.h"
+
+void enable_disable_mul(char *ch, FILE **file, bool *is_mul)
+{
+	bool is_mul_temp = true;
+	unsigned char i = 0;
+	char *next_ch[] = {"o", "(", ")", "n", "'", "t"};
+
+	// Initial screen for "d"
+	if (*ch != *"d")
+	{
+		return;
+	}
+
+	while ((*ch = (char)getc(*file)) != EOF)
+	{
+		// After ")" found, change status
+		if (i == 3)
+		{
+			*is_mul = is_mul_temp;
+			return;
+		}
+		// When "t" found, go back for "()"
+		else if (i == 6)
+		{
+			i = 1;
+		}
+
+		// Find next in array
+		if (*ch == *next_ch[i])
+		{
+			i++;
+			continue;
+		}
+		// If "n" found in place of "(", find "'t" and set false flag
+		else if (*ch == *next_ch[3] && i == 1)
+		{
+			i = 4;
+			is_mul_temp = false;
+			continue;
+		}
+
+		// "do()" or "don't()" interrupted.
+		return;
+	}
+}
 
 int check_digits(char *ch, FILE **file, unsigned char *index)
 {
@@ -15,7 +59,6 @@ int check_digits(char *ch, FILE **file, unsigned char *index)
 		is_digit_found = true;
 		factor *= 10;
 		factor += (int)*ch - 48;
-		printf("%c", *ch);
 	}
 	else
 	{
@@ -36,7 +79,6 @@ int check_digits(char *ch, FILE **file, unsigned char *index)
 	{
 		if (*ch == *next_ch && is_digit_found == true)
 		{
-			printf("%c", *ch);
 			return factor;
 		}
 
@@ -45,7 +87,6 @@ int check_digits(char *ch, FILE **file, unsigned char *index)
 			is_digit_found = true;
 			factor *= 10;
 			factor += (int)*ch - 48;
-			printf("%c", *ch);
 		}
 		else
 		{
@@ -70,24 +111,22 @@ void solve_day3()
 	char *next_ch[] = {"m", "u", "l", "(", ",", ")"};
 	unsigned char i = 0;
 	int factor = 1, product = 1;
-	unsigned long sum = 0;
+	unsigned long sum_part1 = 0, sum_part2 = 0;
+	bool is_mul = true;
 
 	while ((ch = (char)getc(file)) != EOF)
 	{
+		// Check for "do()" or "don't()"
+		enable_disable_mul(&ch, &file, &is_mul);
+
 		// Check for "mul("
 		if (ch == *next_ch[i] && i < 4)
 		{
-			printf("%c", ch);
 			i++;
 			continue;
 		}
 		else if (i < 4)
 		{
-			if (i != 0)
-			{
-				printf("\n");
-			}
-
 			i = 0;
 			continue;
 		}
@@ -95,7 +134,6 @@ void solve_day3()
 		// Check for digits and ","
 		if ((factor = check_digits(&ch, &file, &i)) == 0)
 		{
-			printf("\n");
 			i = 0;
 			factor = 1;
 			product = 1;
@@ -111,12 +149,17 @@ void solve_day3()
 		}
 
 		product *= factor;
-		sum += product;
-		printf(" is %d\n", product);
+		sum_part1 += product;
+		if (is_mul == true)
+		{
+			sum_part2 += product;
+		}
+
 		i = 0;
 		factor = 1;
 		product = 1;
 	}
 
-	printf("Result for Day 3, Part 1: %ld\n", sum);
+	printf("Result for Day 3, Part 1: %ld\n", sum_part1);
+	printf("Result for Day 3, Part 2: %ld\n", sum_part2);
 }
