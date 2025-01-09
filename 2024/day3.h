@@ -13,6 +13,7 @@
 
 #define LINES 1000
 
+int check_digits(char *ch, FILE **file, unsigned char *index);
 void solve_day3();
 
 #endif

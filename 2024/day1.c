@@ -12,7 +12,7 @@ void solve_day1()
 	FILE *file = fopen(INPUT_FILE, "r");
 	if (file == NULL)
 	{
-		perror("No input1.txt file found.\n");
+		perror("No input1.txt file found");
 		return;
 	}
 

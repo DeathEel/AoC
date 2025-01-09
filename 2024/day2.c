@@ -140,7 +140,7 @@ void solve_day2()
 	FILE *file = fopen(INPUT_FILE, "r");
 	if (file == NULL)
 	{
-		perror("No input2.txt file found.\n");
+		perror("No input2.txt file found");
 		return;
 	}
 
