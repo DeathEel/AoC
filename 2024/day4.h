@@ -7,11 +7,17 @@
 
 #define INPUT_FILE "inputs/input4.txt"
 
-#ifdef LINES
-#undef LINES
+#ifdef HEIGHT
+#undef HEIGHT
 #endif
 
-#define LINES 1000
+#define HEIGHT 140
+
+#ifdef WIDTH
+#undef WIDTH
+#endif
+
+#define WIDTH 140
 
 void solve_day4();
 
