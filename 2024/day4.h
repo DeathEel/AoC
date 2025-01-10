@@ -19,6 +19,9 @@
 
 #define WIDTH 140
 
+bool find_next_letter(char (*word_search)[WIDTH], int i, int j, int v, int h, int *k);
+int find_xmas(char (*word_search)[WIDTH], int i, int j);
+int find_x_mas(char (*word_search)[WIDTH], int i, int j);
 void solve_day4();
 
 #endif
