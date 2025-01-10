@@ -64,7 +64,7 @@ int find_xmas(char (*word_search)[WIDTH], int i, int j)
 int find_x_mas(char (*word_search)[WIDTH], int i, int j)
 {
 	// Avoid segfault
-	if (i - 1 < 0 || i + 1 > HEIGHT - 1 || j - 1 < 0 || j + 1 > WIDTH)
+	if (i - 1 < 0 || i + 1 > HEIGHT - 1 || j - 1 < 0 || j + 1 > WIDTH - 1)
 	{
 		return 0;
 	}
@@ -89,12 +89,6 @@ int find_x_mas(char (*word_search)[WIDTH], int i, int j)
 			return 0;
 		}
 	}
-
-	char tl = word_search[i - 1][j - 1];
-	char tr = word_search[i - 1][j + 1];
-	char bl = word_search[i + 1][j - 1];
-	char br = word_search[i + 1][j + 1];
-	printf("%c %c\n %c\t at (%d, %d)\n%c %c\n\n", tl, tr, word_search[i][j], i, j, bl, br);
 
 	return 1;
 }
