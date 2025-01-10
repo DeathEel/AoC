@@ -1,6 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "day4.h"
+
+bool find_next_letter(char (*word_search)[WIDTH], int i, int j, int v, int h, int *k)
+{
+	char *ch_to_find[] = {"M", "A", "S"};
+
+	// Avoid segfault
+	int v_cont = v + *k * v, h_cont = h + *k * h;
+	if (i + v_cont < 0 || i + v_cont > HEIGHT - 1 || j + h_cont < 0 || j + h_cont > WIDTH - 1)
+	{
+		*k = 0;
+		return 0;
+	}
+
+	// Find "M" followed by "A" followed by "S"
+	char next_ch = word_search[i + v_cont][j + h_cont];
+	if (next_ch != *ch_to_find[*k])
+	{
+		*k = 0;
+		return 0;
+	}
+
+	(*k)++;
+
+	if (*k == 3 || find_next_letter(word_search, i, j, v, h, k) == 1)
+	{
+		return 1;
+	}
+
+	return 0;
+}
 
 void solve_day4()
 {
@@ -39,41 +70,18 @@ void solve_day4()
 				continue;
 			}
 
-			printf("\nX found at (%d, %d), ", i, j);
-			unsigned char k = 0;
-			char *ch_to_find[] = {"M", "A", "S"};
 			// Pick a direction v (vertical) and h (horizontal)
 			for (int v = -1; v < 2; v++)
 			{
 				for (int h = -1; h < 2; h++)
 				{
-					// Avoid segfault
-					int v_cont = v + k * v, h_cont = h + k * h;
-					if (i + v_cont < 0 || i + v_cont > HEIGHT - 1 || j + h_cont < 0 || j + h_cont > WIDTH - 1)
-					{
-						continue;
-					}
+					int k = 0;
+					bool xmas_found = find_next_letter(word_search, i, j, v, h, &k);
 
-					// Find "M" followed by "A" followed by "S"
-					char next_ch = word_search[i + v_cont][j + h_cont];
-					if (next_ch != *ch_to_find[k])
-					{
-						k = 0;
-						continue;
-					}
-
-					printf("%c found at (%d, %d), ", *ch_to_find[k], i + v_cont, j + h_cont);
-					k++;
-
-					if (k == 3)
+					if (xmas_found == 1)
 					{
 						xmas_count++;
-						k = 0;
-						printf("xmas_count: %d ", xmas_count);
-						continue;	// Avoid next line
 					}
-
-					h--;	// Keep h the same next iteration to keep picked direction
 				}
 			}
 		}
